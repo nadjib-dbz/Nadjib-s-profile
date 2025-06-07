@@ -25,140 +25,26 @@ class TerminalPortfolio {
     }
     
     init() {
-        this.isMobile = this.detectMobile();
+        console.log('Initializing terminal...');
         this.showWelcome();
         this.setupEventListeners();
-
-        // Add mobile-specific initialization
-        if (this.isMobile) {
-            this.initMobileFeatures();
-        }
-    }
-
-    detectMobile() {
-        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    }
-
-    initMobileFeatures() {
-        try {
-            // Add mobile class to body
-            document.body.classList.add('mobile-device');
-
-            // Show mobile input button
-            const mobileBtn = document.querySelector('.mobile-input-btn');
-            if (mobileBtn) {
-                mobileBtn.style.display = 'inline-block';
-            }
-
-            // Add mobile touch event handlers
-            document.addEventListener('touchstart', function(e) {
-                if (e.touches.length > 1) {
-                    e.preventDefault();
-                }
-            });
-
-            // Show mobile-specific welcome message
-            setTimeout(() => {
-                if (this.addOutput) {
-                    this.addOutput('\n📱 Mobile detected! Tap anywhere to bring up keyboard.', 'info');
-                    this.addOutput('Use the buttons below for quick navigation.', 'info');
-                    this.addOutput('Or use the "📝 Type" button for manual input.', 'info');
-                }
-            }, 3000);
-
-            console.log('Mobile features initialized');
-        } catch (error) {
-            console.error('Error initializing mobile features:', error);
-        }
+        console.log('Terminal initialized');
     }
     
     setupEventListeners() {
-        try {
-            // Desktop keyboard events
-            document.addEventListener('keydown', (e) => {
-                if (this.isTyping) return;
-
-                if (e.key === 'Enter') {
-                    this.executeCurrentCommand();
-                } else if (e.key === 'Backspace') {
-                    this.currentCommand = this.currentCommand.slice(0, -1);
-                    this.updateCommandInput();
-                } else if (e.key.length === 1) {
-                    this.currentCommand += e.key;
-                    this.updateCommandInput();
-                }
-            });
-
-            // Mobile support - create persistent hidden input
-            this.setupMobileInput();
-
-            // Touch events for mobile
-            document.addEventListener('touchstart', () => {
-                if (this.mobileInput) {
-                    try {
-                        this.mobileInput.focus();
-                    } catch (e) {
-                        console.log('Could not focus mobile input:', e);
-                    }
-                }
-            });
-
-            console.log('Event listeners setup complete');
-        } catch (error) {
-            console.error('Error setting up event listeners:', error);
-        }
-    }
-
-    setupMobileInput() {
-        try {
-            // Create a persistent hidden input for mobile
-            this.mobileInput = document.createElement('input');
-            this.mobileInput.type = 'text';
-            this.mobileInput.style.position = 'absolute';
-            this.mobileInput.style.left = '-9999px';
-            this.mobileInput.style.opacity = '0';
-            this.mobileInput.style.pointerEvents = 'none';
-            this.mobileInput.autocomplete = 'off';
-            this.mobileInput.autocorrect = 'off';
-            this.mobileInput.autocapitalize = 'off';
-            this.mobileInput.spellcheck = false;
-            this.mobileInput.setAttribute('inputmode', 'text');
-
-            document.body.appendChild(this.mobileInput);
-
-            // Handle mobile input events
-            this.mobileInput.addEventListener('input', (e) => {
-                if (this.isTyping) return;
-
-                const newValue = e.target.value;
-                this.currentCommand = newValue;
+        document.addEventListener('keydown', (e) => {
+            if (this.isTyping) return;
+            
+            if (e.key === 'Enter') {
+                this.executeCurrentCommand();
+            } else if (e.key === 'Backspace') {
+                this.currentCommand = this.currentCommand.slice(0, -1);
                 this.updateCommandInput();
-                console.log('Mobile input:', newValue);
-            });
-
-            this.mobileInput.addEventListener('keydown', (e) => {
-                if (this.isTyping) return;
-
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    this.executeCurrentCommand();
-                    this.mobileInput.value = '';
-                }
-            });
-
-            // Add focus/blur handlers for better mobile experience
-            this.mobileInput.addEventListener('focus', () => {
-                console.log('Mobile input focused');
-            });
-
-            this.mobileInput.addEventListener('blur', () => {
-                console.log('Mobile input blurred');
-            });
-
-            console.log('Mobile input setup complete');
-        } catch (error) {
-            console.error('Error setting up mobile input:', error);
-        }
+            } else if (e.key.length === 1) {
+                this.currentCommand += e.key;
+                this.updateCommandInput();
+            }
+        });
     }
     
     updateCommandInput() {
@@ -178,7 +64,7 @@ class TerminalPortfolio {
     ╚══██╔══╝██╔════╝██╔══██╗████╗ ████║██║████╗  ██║██╔══██╗██║     
        ██║   █████╗  ██████╔╝██╔████╔██║██║██╔██╗ ██║███████║██║     
        ██║   ██╔══╝  ██╔══██╗██║╚██╔╝██║██║██║╚██╗██║██╔══██║██║     
-       ██║   ███████╗██║  ██║██║ ╚═╝ ██║██║██║ ╚████║██║  ██║███████╗ 
+       ██║   ███████╗██║  ██║██║ ╚═╝ ██║██║██║ ╚████║██║  ██║███████╗
        ╚═╝   ╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚══════╝
     `;
         
@@ -226,21 +112,16 @@ class TerminalPortfolio {
     
     async executeCurrentCommand() {
         if (this.isTyping || !this.currentCommand.trim()) return;
-
+        
         const command = this.currentCommand.trim().toLowerCase();
         this.addOutput(`guest@nadjib:~$ ${this.currentCommand}`, 'command-line');
         this.commandHistory.push(this.currentCommand);
-
+        
         this.currentCommand = '';
         this.updateCommandInput();
-
-        // Clear mobile input if it exists
-        if (this.mobileInput) {
-            this.mobileInput.value = '';
-        }
-
+        
         await this.sleep(100);
-
+        
         if (this.commands[command]) {
             await this.commands[command]();
         } else {
@@ -304,6 +185,10 @@ I believe in learning by doing and leading by example."
         await this.typeText(aboutText, 25);
     }
     
+    clearTerminal() {
+        this.output.innerHTML = '';
+    }
+    
     async showEducation() {
         const educationText = `
 <span class="info">╭─────────────────────────────────────────────────────╮</span>
@@ -320,26 +205,10 @@ I believe in learning by doing and leading by example."
 • <span class="success">Arabic</span> - Native
 • <span class="success">French</span> - Currently learning & improving
 • <span class="success">English</span> - Proficient (as you can see! 😊)
-
-<span class="glow">💻 Technical Learning Path:</span>
-┌─────────────────────────────────────────┐
-│ Foundation: C, Java, HTML/CSS/JS        │
-│ Expanding: Python, React, Flutter       │
-│ Systems: Linux (I'm using Arch btw)     │
-│ Tools: GTK+, Qt Creator, FastAPI        │
-└─────────────────────────────────────────┘
-
-<span class="success">🎯 Academic Goals:</span>
-• Master advanced algorithms & data structures
-• Specialize in full-stack development
-• Contribute to open-source projects
-• Build innovative software solutions
-
-<span class="info">Study approach:</span> Learn by building real projects! 🛠️
         `;
         await this.typeText(educationText, 25);
     }
-    
+
     async showProjects() {
         const projectsText = `
 <span class="info">╭─────────────────────────────────────────────────────╮</span>
@@ -352,32 +221,15 @@ I believe in learning by doing and leading by example."
    │ Tech: C + GTK+ (upgrading to Qt Creator)
    │ Desc: Number base conversion tool with GUI
    │ Status: ✅ Working & compiled
-   └ Next: Enhanced UI with background images
 
-<span class="glow">3. 💚 BioLife Health App (InjazElDjzair)</span>
+<span class="glow">2. 💚 BioLife Health App</span>
    │ Role: Marketing Director
    │ Tech: Mobile app + Marketplace
-   │ Features: Trusted health info, personalized plans
-   │ Special: Bio-products from verified sellers
-   └ Status: 🚧 Pre-launch marketing phase
-
-<span class="glow">4. 🧠 Mini AI Datathon</span>
-   │ Role: Participant
-   │ Topics: ML concepts, Grid/Random Search, Regularization
-   │ Focus: Teaching Bagging, Boosting, practical ML
-   └ Status: ✅ 8th place(first experiance tho)
-
-<span class="glow">5. 🏆 Competitive Programming</span>
-   │ Events: ByteCraft, CodeCraft, picoCTF
-   │ Languages: Primarily C and Python
-   │ Approach: Problem-solving & algorithm optimization
-   └ Status: 🔄 Ongoing participation
-
-<span class="info">💡 All projects focus on real-world impact and learning!</span>
+   │ Status: 🚧 Pre-launch marketing phase
         `;
         await this.typeText(projectsText, 25);
     }
-    
+
     async showSkills() {
         const skillsText = `
 <span class="info">╭─────────────────────────────────────────────────────╮</span>
@@ -391,37 +243,11 @@ I believe in learning by doing and leading by example."
 │ <span class="glow">JavaScript</span>  ██████████████░░░░░░ 75% │
 │ <span class="glow">HTML/CSS</span>    ██████████████████░░ 90% │
 │ <span class="glow">Python</span>      ██████████░░░░░░░░░░ 60% │
-│ <span class="glow">French</span>      ████████░░░░░░░░░░░░ 50% │
 └─────────────────────────────────────────┘
-
-<span class="success">🛠️ Frameworks & Tools:</span>
-• <span class="info">GUI Development:</span> GTK+, Qt Creator
-• <span class="info">Mobile:</span> Flutter (learning)
-• <span class="info">Web:</span> React (started), FastAPI (learning)
-• <span class="info">CMS:</span> WordPress (Ubuntu setup)
-• <span class="info">Competitive Programming:</span> Algorithm optimization
-
-<span class="success">🖥️ Operating Systems:</span>
-• <span class="glow">Triple Boot Setup:</span> Ubuntu + Arch Linux + Windows
-• <span class="info">Primary:</span> Linux-based development
-• <span class="info">Expertise:</span> System administration & configuration
-
-<span class="success">🎯 Currently Learning:</span>
-• Advanced Python for data science
-• React for modern web development
-• Flutter for cross-platform mobile apps
-• FastAPI for backend development
-• French language proficiency
-
-<span class="info">🏆 Specialties:</span>
-• Problem-solving & algorithm design
-• GUI application development
-• System setup & configuration
-• Project leadership & organization
         `;
         await this.typeText(skillsText, 25);
     }
-    
+
     async showLeadership() {
         const leadershipText = `
 <span class="info">╭─────────────────────────────────────────────────────╮</span>
@@ -433,7 +259,6 @@ I believe in learning by doing and leading by example."
 │ Role: Active Member                     │
 │ Mission: Global internship opportunities│
 │ Impact: Connecting students worldwide   │
-│ Focus: Operations & student development │
 └─────────────────────────────────────────┘
 
 <span class="success">💚 BioLife Startup</span>
@@ -441,22 +266,11 @@ I believe in learning by doing and leading by example."
 │ Position: Marketing Director            │
 │ Responsibility: Brand strategy & growth │
 │ Current: Building pre-launch hype       │
-│ Platform: Instagram marketing campaign │
 └─────────────────────────────────────────┘
-
-<span class="success">💡 Leadership Philosophy:</span>
-"Lead by example, innovate through collaboration,
-and always start from zero with determination."
-
-<span class="info">🎯 Impact Areas:</span>
-• Technology education & skill development
-• Startup ecosystem building in Algeria
-• International student exchange programs
-• Community building through tech events
         `;
         await this.typeText(leadershipText, 25);
     }
-    
+
     async showContact() {
         const contactText = `
 <span class="info">╭─────────────────────────────────────────────────────╮</span>
@@ -469,7 +283,7 @@ and always start from zero with determination."
    <span class="link" onclick="copyToClipboard('m_dabouz@estin.dz')">m_dabouz@estin.dz</span>
    <span class="info">(Click to copy)</span>
 
-   <span class="glow">📞 Phone Number:</span>
+<span class="glow">📞 Phone Number:</span>
    <span class="link" onclick="copyToClipboard('+213549769944')">+213549769944</span>
    <span class="info">(Click to copy)</span>
 
@@ -478,42 +292,18 @@ and always start from zero with determination."
 
 <span class="glow">📍 Location:</span>
    Lives in Algiers, Studies in Béjaïa
-
-<span class="glow">🔗 Professional Networks:</span>
-   <span class="link" onclick="window.open('https://www.linkedin.com/in/mohammed-nadjib-dabouz-47679b351/', '_blank')">LinkedIn Profile</span>
-   <span class="link" onclick="window.open('https://github.com/nadjib-dbz', '_blank')">GitHub Portfolio</span>
-   <span class="link" onclick="window.open('https://www.instagram.com/m_o_h__d_z/', '_blank')">Instagram</span>
-<span class="success">💼 Open For:</span>
-┌─────────────────────────────────────────┐
-│ • Collaboration on innovative projects  │
-│ • Startup partnerships & ventures       │
-│ • Technical mentorship exchange         │
-│ • AIESEC global opportunities           │
-│ • Competitive programming teams         │
-│ • Open source contributions             │
-└─────────────────────────────────────────┘
-
-<span class="success">🚀 Current Interests:</span>
-• Health tech innovation (BioLife)
-• AI/ML learning & application
-• Cross-platform mobile development
-
-<span class="info">Response time: Usually within 24 hours</span>
-<span class="glow">Status: Always ready for new challenges! 💪</span>
-
-<span class="info">💡 Fun fact:</span> Best way to reach me? Challenge me with an interesting project! 🎯
         `;
         await this.typeText(contactText, 25);
     }
-    
+
     async whoami() {
         await this.typeText('guest', 30);
         await this.sleep(300);
         await this.typeText('\nBut you can call me Nadjib! 😊', 30, 'info');
         await this.sleep(500);
-        await this.typeText('\n19-year-old CS student, future startup founder inchallah, and challenge seeker! 🚀', 30, 'success');
+        await this.typeText('\n19-year-old CS student, future startup founder inchallah! 🚀', 30, 'success');
     }
-    
+
     async listFiles() {
         const lsText = `
 total 12
@@ -522,19 +312,13 @@ drwxr-xr-x  2 nadjib nadjib 4096 Dec 15 10:30 <span class="info">skills/</span>
 drwxr-xr-x  2 nadjib nadjib 4096 Dec 15 10:30 <span class="info">leadership/</span>
 -rw-r--r--  1 nadjib nadjib 1024 Dec 15 10:30 <span class="success">about.txt</span>
 -rw-r--r--  1 nadjib nadjib  512 Dec 15 10:30 <span class="success">contact.txt</span>
--rw-r--r--  1 nadjib nadjib  256 Dec 15 10:30 <span class="success">education.txt</span>
--rw-r--r--  1 nadjib nadjib  128 Dec 15 10:30 <span class="success">README.md</span>
         `;
         await this.typeText(lsText, 20);
     }
-    
+
     async catFile() {
         await this.typeText('Usage: cat [filename]', 30, 'info');
-        await this.typeText('\nTry: cat about.txt, cat education.txt, cat contact.txt, or cat README.md', 30, 'info');
-    }
-    
-    clearTerminal() {
-        this.output.innerHTML = '';
+        await this.typeText('\nTry: cat about.txt, cat contact.txt', 30, 'info');
     }
 }
 
@@ -543,26 +327,27 @@ function executeCommand(command) {
     if (terminal) {
         terminal.currentCommand = command;
         terminal.executeCurrentCommand();
-    } else {
-        console.error('Terminal not initialized');
     }
 }
 
-// Mobile fallback - prompt for command input
+// Mobile support
 function promptCommand() {
-    if (terminal && terminal.isMobile) {
-        const command = prompt('Enter command:');
-        if (command) {
-            executeCommand(command);
-        }
+    const command = prompt('Enter command:');
+    if (command && terminal) {
+        executeCommand(command);
     }
+}
+
+// Simple mobile detection
+function isMobile() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }
 
 function copyToClipboard(text) {
     navigator.clipboard.writeText(text).then(() => {
-        terminal.addOutput('✓ Email copied to clipboard!', 'success');
+        terminal.addOutput('✓ Copied to clipboard!', 'success');
     }).catch(() => {
-        terminal.addOutput('✗ Failed to copy email. Please copy manually: ' + text, 'error');
+        terminal.addOutput('✗ Failed to copy: ' + text, 'error');
     });
 }
 
@@ -570,12 +355,29 @@ function copyToClipboard(text) {
 let terminal;
 document.addEventListener('DOMContentLoaded', () => {
     try {
-        console.log('DOM loaded, initializing terminal...');
+        console.log('DOM loaded, initializing simple terminal...');
         terminal = new TerminalPortfolio();
-        console.log('Terminal initialized successfully');
+
+        // Add mobile support
+        if (isMobile()) {
+            document.body.classList.add('mobile-device');
+            const mobileBtn = document.querySelector('.mobile-input-btn');
+            if (mobileBtn) {
+                mobileBtn.style.display = 'inline-block';
+            }
+
+            // Add mobile message after welcome
+            setTimeout(() => {
+                if (terminal && terminal.addOutput) {
+                    terminal.addOutput('\n📱 Mobile detected! Use buttons or "📝 Type" for input.', 'info');
+                }
+            }, 5000);
+        }
+
+        console.log('Simple terminal initialized successfully');
     } catch (error) {
         console.error('Error initializing terminal:', error);
-        // Fallback: show error message
+        // Show error in the terminal if possible
         const output = document.getElementById('output');
         if (output) {
             output.innerHTML = '<div class="error">Error loading terminal. Please refresh the page.</div>';
