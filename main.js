@@ -25,14 +25,48 @@ class TerminalPortfolio {
     }
     
     init() {
+        this.isMobile = this.detectMobile();
         this.showWelcome();
         this.setupEventListeners();
+
+        // Add mobile-specific initialization
+        if (this.isMobile) {
+            this.initMobileFeatures();
+        }
+    }
+
+    detectMobile() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
+
+    initMobileFeatures() {
+        // Add mobile class to body
+        document.body.classList.add('mobile-device');
+
+        // Show mobile input button
+        const mobileBtn = document.querySelector('.mobile-input-btn');
+        if (mobileBtn) {
+            mobileBtn.style.display = 'inline-block';
+        }
+
+        // Show mobile-specific welcome message
+        setTimeout(() => {
+            this.addOutput('\n📱 Mobile detected! Tap anywhere to bring up keyboard.', 'info');
+            this.addOutput('Use the buttons below for quick navigation.', 'info');
+            this.addOutput('Or use the "📝 Type" button for manual input.', 'info');
+            this.addOutput('Debug: Mobile input initialized: ' + (this.mobileInput ? 'Yes' : 'No'), 'info');
+        }, 3000);
+
+        // Add debugging for mobile events
+        console.log('Mobile features initialized');
+        console.log('User agent:', navigator.userAgent);
     }
     
     setupEventListeners() {
+        // Desktop keyboard events
         document.addEventListener('keydown', (e) => {
             if (this.isTyping) return;
-            
+
             if (e.key === 'Enter') {
                 this.executeCurrentCommand();
             } else if (e.key === 'Backspace') {
@@ -43,6 +77,68 @@ class TerminalPortfolio {
                 this.updateCommandInput();
             }
         });
+
+        // Mobile support - create persistent hidden input
+        this.setupMobileInput();
+
+        // Touch events for mobile
+        document.addEventListener('touchstart', () => {
+            if (this.mobileInput) {
+                this.mobileInput.focus();
+            }
+        });
+    }
+
+    setupMobileInput() {
+        try {
+            // Create a persistent hidden input for mobile
+            this.mobileInput = document.createElement('input');
+            this.mobileInput.type = 'text';
+            this.mobileInput.style.position = 'absolute';
+            this.mobileInput.style.left = '-9999px';
+            this.mobileInput.style.opacity = '0';
+            this.mobileInput.style.pointerEvents = 'none';
+            this.mobileInput.autocomplete = 'off';
+            this.mobileInput.autocorrect = 'off';
+            this.mobileInput.autocapitalize = 'off';
+            this.mobileInput.spellcheck = false;
+            this.mobileInput.setAttribute('inputmode', 'text');
+
+            document.body.appendChild(this.mobileInput);
+
+            // Handle mobile input events
+            this.mobileInput.addEventListener('input', (e) => {
+                if (this.isTyping) return;
+
+                const newValue = e.target.value;
+                this.currentCommand = newValue;
+                this.updateCommandInput();
+                console.log('Mobile input:', newValue);
+            });
+
+            this.mobileInput.addEventListener('keydown', (e) => {
+                if (this.isTyping) return;
+
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    this.executeCurrentCommand();
+                    this.mobileInput.value = '';
+                }
+            });
+
+            // Add focus/blur handlers for better mobile experience
+            this.mobileInput.addEventListener('focus', () => {
+                console.log('Mobile input focused');
+            });
+
+            this.mobileInput.addEventListener('blur', () => {
+                console.log('Mobile input blurred');
+            });
+
+            console.log('Mobile input setup complete');
+        } catch (error) {
+            console.error('Error setting up mobile input:', error);
+        }
     }
     
     updateCommandInput() {
@@ -110,16 +206,21 @@ class TerminalPortfolio {
     
     async executeCurrentCommand() {
         if (this.isTyping || !this.currentCommand.trim()) return;
-        
+
         const command = this.currentCommand.trim().toLowerCase();
         this.addOutput(`guest@nadjib:~$ ${this.currentCommand}`, 'command-line');
         this.commandHistory.push(this.currentCommand);
-        
+
         this.currentCommand = '';
         this.updateCommandInput();
-        
+
+        // Clear mobile input if it exists
+        if (this.mobileInput) {
+            this.mobileInput.value = '';
+        }
+
         await this.sleep(100);
-        
+
         if (this.commands[command]) {
             await this.commands[command]();
         } else {
@@ -419,8 +520,22 @@ drwxr-xr-x  2 nadjib nadjib 4096 Dec 15 10:30 <span class="info">leadership/</sp
 
 // Utility functions
 function executeCommand(command) {
-    terminal.currentCommand = command;
-    terminal.executeCurrentCommand();
+    if (terminal) {
+        terminal.currentCommand = command;
+        terminal.executeCurrentCommand();
+    } else {
+        console.error('Terminal not initialized');
+    }
+}
+
+// Mobile fallback - prompt for command input
+function promptCommand() {
+    if (terminal && terminal.isMobile) {
+        const command = prompt('Enter command:');
+        if (command) {
+            executeCommand(command);
+        }
+    }
 }
 
 function copyToClipboard(text) {
@@ -437,17 +552,25 @@ document.addEventListener('DOMContentLoaded', () => {
     terminal = new TerminalPortfolio();
 });
 
-// Handle mobile keyboard
-document.addEventListener('touchstart', () => {
-    // Focus on a hidden input for mobile keyboard
-    const hiddenInput = document.createElement('input');
-    hiddenInput.style.position = 'absolute';
-    hiddenInput.style.left = '-9999px';
-    hiddenInput.style.opacity = '0';
-    document.body.appendChild(hiddenInput);
-    hiddenInput.focus();
-    
-    setTimeout(() => {
-        document.body.removeChild(hiddenInput);
-    }, 100);
-});
+// Mobile device detection and additional mobile support
+function isMobileDevice() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
+// Enhanced mobile support
+if (isMobileDevice()) {
+    // Prevent zoom on double tap
+    document.addEventListener('touchstart', function(e) {
+        if (e.touches.length > 1) {
+            e.preventDefault();
+        }
+    });
+
+    // Prevent default touch behaviors that might interfere
+    document.addEventListener('touchmove', function(e) {
+        e.preventDefault();
+    }, { passive: false });
+
+    // Add mobile-specific styling
+    document.body.classList.add('mobile-device');
+}

@@ -279,3 +279,77 @@ body {
 .glow {
     text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00;
 }
+
+/* Mobile-specific improvements */
+.mobile-device {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-device .terminal-container {
+    height: 100vh;
+    border-radius: 0;
+    border: none;
+}
+
+.mobile-device .terminal-body {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+}
+
+.mobile-device .command-buttons {
+    position: sticky;
+    bottom: 0;
+    background: #1a1a1a;
+    border-top: 1px solid #333;
+    z-index: 100;
+}
+
+.mobile-device .command-buttons button {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Improve touch targets on mobile */
+@media (max-width: 768px) {
+    .command-buttons button {
+        min-height: 44px;
+        min-width: 60px;
+    }
+}
+
+/* Better mobile keyboard handling */
+.mobile-device .input-line {
+    position: relative;
+}
+
+.mobile-device .input-line::after {
+    content: "Tap anywhere to type";
+    position: absolute;
+    right: 0;
+    top: 0;
+    font-size: 10px;
+    color: #666;
+    opacity: 0.7;
+}
+
+/* Mobile input button */
+.mobile-input-btn {
+    background: #ff6b35 !important;
+    border-color: #ff6b35 !important;
+}
+
+.mobile-device .mobile-input-btn {
+    display: inline-block !important;
+}
+
+/* Hide mobile button on desktop */
+@media (min-width: 769px) {
+    .mobile-input-btn {
+        display: none !important;
+    }
+}
