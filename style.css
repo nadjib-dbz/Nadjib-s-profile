@@ -259,7 +259,33 @@ body {
     }
     
     .ascii-art {
-        font-size: 8px;
+        font-size: 6px;
+        overflow-x: scroll;
+        white-space: nowrap;
+        max-height: 200px;
+    }
+}
+
+/* Extra small screens */
+@media (max-width: 320px) {
+    .terminal-body {
+        font-size: 10px;
+        padding: 5px;
+    }
+
+    .ascii-art {
+        font-size: 4px;
+        max-height: 150px;
+    }
+
+    .command-buttons button {
+        padding: 4px 8px;
+        font-size: 10px;
+        margin: 2px;
+    }
+
+    .terminal-title {
+        font-size: 10px;
     }
 }
 

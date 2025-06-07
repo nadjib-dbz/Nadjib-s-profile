@@ -52,23 +52,63 @@ class TerminalPortfolio {
     }
     
     async showWelcome() {
-        const asciiArt = `
-    ███╗   ██╗ █████╗ ██████╗      ██╗██╗██████╗ 
+        // Check screen size for appropriate ASCII art
+        const isVerySmallScreen = window.innerWidth <= 480;
+        const isMobileScreen = window.innerWidth <= 768;
+
+        let asciiArt;
+        if (isVerySmallScreen) {
+            // Very small screen - minimal ASCII
+            asciiArt = `
+┌─────────────────────┐
+│   NADJIB TERMINAL   │
+│     PORTFOLIO       │
+└─────────────────────┘
+
+    ██╗   ██╗
+    ████╗ ██║
+    ██╔████╔╝
+    ██║╚██╔╝
+    ██║ ╚═╝
+    ╚═╝
+    `;
+        } else if (isMobileScreen) {
+            // Mobile-friendly ASCII art
+            asciiArt = `
+╔══════════════════════════════╗
+║        NADJIB TERMINAL       ║
+║         PORTFOLIO            ║
+╚══════════════════════════════╝
+
+    ███╗   ██╗
+    ████╗  ██║
+    ██╔██╗ ██║
+    ██║╚██╗██║
+    ██║ ╚████║
+    ╚═╝  ╚═══╝
+    `;
+        } else {
+            // Desktop ASCII art
+            asciiArt = `
+    ███╗   ██╗ █████╗ ██████╗      ██╗██╗██████╗
     ████╗  ██║██╔══██╗██╔══██╗     ██║██║██╔══██╗
     ██╔██╗ ██║███████║██║  ██║     ██║██║██████╔╝
     ██║╚██╗██║██╔══██║██║  ██║██   ██║██║██╔══██╗
     ██║ ╚████║██║  ██║██████╔╝╚█████╔╝██║██████╔╝
-    ╚═╝  ╚═══╝╚═╝  ╚═╝╚═════╝  ╚════╝ ╚═╝╚═════╝ 
-                                                   
-    ████████╗███████╗██████╗ ███╗   ███╗██╗███╗   ██╗ █████╗ ██╗     
-    ╚══██╔══╝██╔════╝██╔══██╗████╗ ████║██║████╗  ██║██╔══██╗██║     
-       ██║   █████╗  ██████╔╝██╔████╔██║██║██╔██╗ ██║███████║██║     
-       ██║   ██╔══╝  ██╔══██╗██║╚██╔╝██║██║██║╚██╗██║██╔══██║██║     
+    ╚═╝  ╚═══╝╚═╝  ╚═╝╚═════╝  ╚════╝ ╚═╝╚═════╝
+
+    ████████╗███████╗██████╗ ███╗   ███╗██╗███╗   ██╗ █████╗ ██╗
+    ╚══██╔══╝██╔════╝██╔══██╗████╗ ████║██║████╗  ██║██╔══██╗██║
+       ██║   █████╗  ██████╔╝██╔████╔██║██║██╔██╗ ██║███████║██║
+       ██║   ██╔══╝  ██╔══██╗██║╚██╔╝██║██║██║╚██╗██║██╔══██║██║
        ██║   ███████╗██║  ██║██║ ╚═╝ ██║██║██║ ╚████║██║  ██║███████╗
        ╚═╝   ╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚══════╝
     `;
-        
-        await this.typeText(asciiArt, 30, 'ascii-art glow');
+        }
+
+        // Adjust typing speed based on screen size
+        const typingSpeed = isVerySmallScreen ? 15 : (isMobileScreen ? 20 : 30);
+        await this.typeText(asciiArt, typingSpeed, 'ascii-art glow');
         await this.sleep(1000);
         await this.typeText('\nWelcome to Nadjib\'s Terminal Portfolio!', 50);
         await this.sleep(500);
