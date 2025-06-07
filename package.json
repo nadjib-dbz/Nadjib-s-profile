@@ -1,11 +1,11 @@
 {
-  "name": "vite-react-typescript-starter",
+  "name": "nadjib-terminal-portfolio",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "echo 'No build needed for static site' && mkdir -p dist && cp -r *.html *.js *.css *.md dist/",
     "lint": "eslint .",
     "preview": "vite preview"
   },
