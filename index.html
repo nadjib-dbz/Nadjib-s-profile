@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nadjib's Terminal Portfolio</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="terminal-container">
+        <div class="terminal-header">
+            <div class="terminal-buttons">
+                <span class="btn close"></span>
+                <span class="btn minimize"></span>
+                <span class="btn maximize"></span>
+            </div>
+            <div class="terminal-title">nadjib@estin: ~</div>
+        </div>
+        
+        <div class="terminal-body" id="terminal">
+            <div id="output"></div>
+            <div class="input-line" id="input-line">
+                <span class="prompt">guest@nadjib:~$ </span>
+                <span id="command-input"></span>
+                <span class="cursor" id="cursor">█</span>
+            </div>
+        </div>
+        
+        <div class="command-buttons">
+            <button onclick="executeCommand('help')">help</button>
+            <button onclick="executeCommand('about')">about</button>
+            <button onclick="executeCommand('education')">education</button>
+            <button onclick="executeCommand('projects')">projects</button>
+            <button onclick="executeCommand('skills')">skills</button>
+            <button onclick="executeCommand('leadership')">leadership</button>
+            <button onclick="executeCommand('contact')">contact</button>
+            <button onclick="executeCommand('clear')">clear</button>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>
